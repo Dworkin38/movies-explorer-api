@@ -1,19 +1,29 @@
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const helmet = require('helmet');
+const { DATA_BASE_URL, DEFAULT_PORT } = require('./utils/config');
+const handlerErrors = require('./errors/handlerErrors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routers = require('./routes/index');
 
-const { PORT = 3001 } = process.env;
+const { PORT = DEFAULT_PORT } = process.env;
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(DATA_BASE_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
 
-app.listen(PORT, () => {
+app.use(requestLogger);
+app.use(helmet());
 
-});
+routers(app);
+
+app.use(errorLogger);
+app.use(errors());
+app.use(handlerErrors);
+
+app.listen(PORT);

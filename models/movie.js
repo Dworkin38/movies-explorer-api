@@ -10,6 +10,10 @@ const movieSchema = mongoose.Schema({
     type: String,
     require: true,
   },
+  duration: {
+    type: Number,
+    require: true,
+  },
   year: {
     type: String,
     require: true,
@@ -48,7 +52,7 @@ const movieSchema = mongoose.Schema({
     require: true,
   },
   movieId: {
-    type: String,
+    type: Number,
     require: true,
   },
   nameRU: {
