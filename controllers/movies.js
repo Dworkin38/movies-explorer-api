@@ -33,7 +33,7 @@ module.exports.createMovie = async (req, res, next) => {
       thumbnail,
       movieId,
     } = req.body;
-    const owner = req.user._id;
+    const ownerId = req.user._id;
 
     let movie = await Movie.create({
       country,
@@ -47,13 +47,12 @@ module.exports.createMovie = async (req, res, next) => {
       nameEN,
       thumbnail,
       movieId,
-      owner: owner,
+      owner: ownerId,
     });
     movie = movie.toJSON();
     delete movie.__v;
     return res.send({ data: movie });
   } catch (error) {
-    console.log(error);
     return error.name === 'ValidationError' ? next(new BadRequestError(MESSAGE_ERROR_BAD_REQUEST)) : next(error);
   }
 };
