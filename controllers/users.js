@@ -50,7 +50,13 @@ module.exports.updateUserMe = async (req, res, next) => {
       });
     }
   } catch (error) {
-    return error.name === 'ValidationError' ? next(new BadRequestError(MESSAGE_ERROR_BAD_REQUEST)) : next(error);
+    if (error.code && error.code === 11000) {
+      return next(new ConflictError(MESSAGE_ERROR_ACCOUNT_ALREADY_EXISTS));
+    }
+    if (error.name === 'ValidationError') {
+      return next(new BadRequestError(MESSAGE_ERROR_BAD_REQUEST));
+    }
+    return next(error);
   }
 };
 
@@ -58,7 +64,10 @@ module.exports.createUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hash });
+    let user = await User.create({ name, email, password: hash });
+    user = user.toJSON();
+    delete user.__v;
+    delete user.password;
     return res.send({ data: user });
   } catch (error) {
     if (error.code && error.code === 11000) {

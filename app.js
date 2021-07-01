@@ -3,12 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
-const { DATA_BASE_URL, DEFAULT_PORT } = require('./utils/config');
+const { DEFAULT_DATA_BASE_URL, DEFAULT_PORT } = require('./utils/config');
 const handlerErrors = require('./errors/handlerErrors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routers = require('./routes/index');
 
-const { PORT = DEFAULT_PORT } = process.env;
+const { PORT = DEFAULT_PORT, DATA_BASE_URL = DEFAULT_DATA_BASE_URL } = process.env;
 const app = express();
 
 mongoose.connect(DATA_BASE_URL, {
